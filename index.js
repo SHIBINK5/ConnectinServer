@@ -23,8 +23,6 @@ import User from "./models/User.js";
 import Post from "./models/Post.js";
 import {users,posts} from "./data/index.js";
 
-import {createServer} from 'http';
-import {Server} from 'socket.io';
 
 
 /* CONFIGURATIONS */
@@ -33,16 +31,20 @@ import {Server} from 'socket.io';
  const __dirname = path.dirname(__filename);
  dotenv.config();
  const app=express();
+
  app.use(express.json());
  app.use(helmet());
  app.use(helmet.crossOriginResourcePolicy({policy:"cross-origin"}))
 app.use(morgan("common"));
 app.use(bodyParser.json({limit:"30mb",extended:true}));
 app.use(bodyParser.urlencoded({limit:"30mb",extended:true}));
-app.use(cors({
-  origin:["https://connectins.netlify.app","http://localhost:3000"],
-  credentials:true
-}));
+// app.use(cors({
+//   origin:["https://connectins.netlify.app","http://localhost:3000"],
+//   credentials:true
+// }));
+app.options('*',cors());
+app.use(cors());
+
 app.use("/assets",express.static(path.join(__dirname,'public/assets')));
 import { editProfilePic } from './controllers/users.js';
 /*FILE STORAGE*/
@@ -70,6 +72,10 @@ app.use("/message", MessageRoute)
 
 
 const httpServer=createServer(app);
+import {createServer} from 'http';
+import {Server} from 'socket.io';
+
+
 const io=new Server(httpServer,{
   cors:{
     origin:["https://connectins.netlify.app","http://localhost:3000"]
